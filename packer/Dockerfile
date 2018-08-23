@@ -11,4 +11,4 @@ RUN curl -L https://releases.hashicorp.com/packer/${packer_version}/packer_${pac
     && mv packer/packer .local/bin \
     && rm -rf packer_${packer_version}_linux_amd64.zip
 
-COPY wrappers/* /usr/local/bin/
+COPY packer/wrappers/* /usr/local/bin/
