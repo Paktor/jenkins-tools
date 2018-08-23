@@ -6,4 +6,5 @@ WORKDIR $HOME
 
 RUN .local/bin/pip install awscli awsebcli --upgrade --user --no-warn-script-location
 
-COPY wrappers/* /usr/local/bin/
+COPY wrappers/aws /usr/local/bin/
+COPY wrappers/eb /usr/local/bin/
