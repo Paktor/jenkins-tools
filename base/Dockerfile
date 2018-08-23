@@ -45,4 +45,4 @@ USER jenkins
 WORKDIR $HOME
 
 RUN curl -O https://bootstrap.pypa.io/get-pip.py \
-  && python3 get-pip.py --user
+  && python3 get-pip.py --user --no-warn-script-location

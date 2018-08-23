@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+DOCKER_SOCK="/var/run/docker.sock"
+
+if [ -f "$DOCKER_SOCK" ];
+then
+    sudo chgrp jenkins /var/run/docker.sock
+fi
+
+exec ~/.local/bin/packer $*
