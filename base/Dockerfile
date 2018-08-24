@@ -19,9 +19,6 @@ RUN apt-get update \
 RUN locale-gen en_US.UTF-8 || true
 ENV LANG=en_US.UTF-8
 
-# Install Docker
-RUN curl -fsSL get.docker.com | sh
-
 ENV JENKINS_HOME /var/jenkins_home
 ENV HOME /home/jenkins
 
@@ -40,9 +37,28 @@ RUN groupadd --gid ${gid} ${group} \
   && echo 'jenkins ALL=NOPASSWD: ALL' >> /etc/sudoers.d/50-jenkins \
   && echo 'Defaults    env_keep += "DEBIAN_FRONTEND"' >> /etc/sudoers.d/env_keep 
 
+COPY base/wrappers/* /usr/local/bin/
+
 USER jenkins
 
 WORKDIR $HOME
 
 RUN curl -O https://bootstrap.pypa.io/get-pip.py \
   && python3 get-pip.py --user --no-warn-script-location
+
+# Install docker
+RUN set -ex \
+  && export DOCKER_VERSION=$(curl --silent --fail --retry 3 https://download.docker.com/linux/static/stable/x86_64/ | grep -o -e 'docker-[.0-9]*-ce\.tgz' | sort -r | head -n 1) \
+  && DOCKER_URL="https://download.docker.com/linux/static/stable/x86_64/${DOCKER_VERSION}" \
+  && echo Docker URL: $DOCKER_URL \
+  && curl --silent --show-error --location --fail --retry 3 --output /tmp/docker.tgz "${DOCKER_URL}" \
+  && ls -lha /tmp/docker.tgz \
+  && tar -xz -C /tmp -f /tmp/docker.tgz \
+  && mv /tmp/docker/* ${HOME}/.local/bin \
+  && rm -rf /tmp/docker /tmp/docker.tgz
+
+# docker compose
+RUN COMPOSE_URL="https://circle-downloads.s3.amazonaws.com/circleci-images/cache/linux-amd64/docker-compose-latest" \
+  && curl --silent --show-error --location --fail --retry 3 --output ${HOME}/.local/bin/docker-compose $COMPOSE_URL \
+  && chmod +x ${HOME}/.local/bin/docker-compose
+

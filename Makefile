@@ -1,6 +1,9 @@
 build-base:
 	docker build -t jenkinstools/base:latest -f base/Dockerfile .
 
+base-run:
+	docker run -it --rm -u 1000:1000 -v /var/run/docker.sock:/var/run/docker.sock jenkinstools/base:latest docker ps
+
 build-eb:
 	docker build -t jenkinstools/eb:latest -f eb/Dockerfile .
 
