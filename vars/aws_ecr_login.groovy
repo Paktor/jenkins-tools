@@ -10,7 +10,11 @@ def call(arguments) {
 
     buildImage.pull()
 
+    def output
+
     buildImage.inside() {
-        sh "eval \$(aws ecr get-login $arguments)"
+        output = sh returnStdout: true, script: "aws ecr get-login $arguments"
     }
+
+    sh "$output"
 }
