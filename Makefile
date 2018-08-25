@@ -22,5 +22,11 @@ build-packer:
 packer-version:
 	docker run -it --rm -u 1000:1000 -v /var/run/docker.sock:/var/run/docker.sock jenkinstools/packer:latest packer --version
 
-make-all: build-base build-eb build-ecs-cli build-packer
+build-aws:
+	docker build -t jenkinstools/aws:latest -f aws/Dockerfile .
+
+aws-version:
+	docker run -it --rm -u 1000:1000 -v /var/run/docker.sock:/var/run/docker.sock jenkinstools/aws:latest aws --version
+
+make-all: build-base build-eb build-ecs-cli build-packer build-aws
 
