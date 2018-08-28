@@ -6,7 +6,7 @@
  * @param scm
  */
 def call(arguments) {
-    def buildImage = docker.image('jenkinstools/ecs-cli:latest')
+    def buildImage = docker.image('jenkinstools/aws:latest')
 
     buildImage.pull()
 
