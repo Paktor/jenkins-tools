@@ -4,6 +4,5 @@ USER jenkins
 
 WORKDIR $HOME
 
-RUN .local/bin/pip install awscli --upgrade --user --no-warn-script-location
+RUN pip install awscli --upgrade --user 
 
-COPY aws/wrappers/* /usr/local/bin/
