@@ -37,15 +37,6 @@ RUN groupadd --gid ${gid} ${group} \
   && echo 'jenkins ALL=NOPASSWD: ALL' >> /etc/sudoers.d/50-jenkins \
   && echo 'Defaults    env_keep += "DEBIAN_FRONTEND"' >> /etc/sudoers.d/env_keep 
 
-COPY base/wrappers/* /usr/local/bin/
-
-USER jenkins
-
-WORKDIR $HOME
-
-RUN curl -O https://bootstrap.pypa.io/get-pip.py \
-  && python3 get-pip.py --user --no-warn-script-location
-
 # Install docker
 RUN set -ex \
   && export DOCKER_VERSION=$(curl --silent --fail --retry 3 https://download.docker.com/linux/static/stable/x86_64/ | grep -o -e 'docker-[.0-9]*-ce\.tgz' | sort -r | head -n 1) \
@@ -54,11 +45,21 @@ RUN set -ex \
   && curl --silent --show-error --location --fail --retry 3 --output /tmp/docker.tgz "${DOCKER_URL}" \
   && ls -lha /tmp/docker.tgz \
   && tar -xz -C /tmp -f /tmp/docker.tgz \
-  && mv /tmp/docker/* ${HOME}/.local/bin \
+  && mv /tmp/docker/docker /usr/local/bin/docker \
+  && chown root:root /usr/local/bin/docker \
+  && chmod +s /usr/local/bin/docker \
   && rm -rf /tmp/docker /tmp/docker.tgz
 
 # docker compose
 RUN COMPOSE_URL="https://circle-downloads.s3.amazonaws.com/circleci-images/cache/linux-amd64/docker-compose-latest" \
-  && curl --silent --show-error --location --fail --retry 3 --output ${HOME}/.local/bin/docker-compose $COMPOSE_URL \
-  && chmod +x ${HOME}/.local/bin/docker-compose
+  && curl --silent --show-error --location --fail --retry 3 --output /usr/local/bin/docker-compose $COMPOSE_URL \
+  && chmod +xs /usr/local/bin/docker-compose
 
+USER jenkins
+
+WORKDIR $HOME
+
+ENV PATH=$HOME/.local/bin:$PATH
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py \
+  && python3 get-pip.py --user --no-warn-script-location
