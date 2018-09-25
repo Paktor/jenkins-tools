@@ -37,9 +37,7 @@ RUN groupadd --gid ${gid} ${group} \
   && echo 'jenkins ALL=NOPASSWD: ALL' >> /etc/sudoers.d/50-jenkins \
   && echo 'Defaults    env_keep += "DEBIAN_FRONTEND"' >> /etc/sudoers.d/env_keep 
 
-# Install docker
-RUN set -ex \
-  && export DOCKER_VERSION=$(curl --silent --fail --retry 3 https://download.docker.com/linux/static/stable/x86_64/ | grep -o -e 'docker-[.0-9]*-ce\.tgz' | sort -r | head -n 1) \
+RUN export DOCKER_VERSION=$(curl --silent --fail --retry 3 https://download.docker.com/linux/static/stable/x86_64/ | grep -o -e 'docker-[.0-9]*-ce\.tgz' | sort -r | head -n 1) \
   && DOCKER_URL="https://download.docker.com/linux/static/stable/x86_64/${DOCKER_VERSION}" \
   && echo Docker URL: $DOCKER_URL \
   && curl --silent --show-error --location --fail --retry 3 --output /tmp/docker.tgz "${DOCKER_URL}" \
@@ -50,10 +48,12 @@ RUN set -ex \
   && chmod +s /usr/local/bin/docker \
   && rm -rf /tmp/docker /tmp/docker.tgz
 
-# docker compose
-RUN COMPOSE_URL="https://circle-downloads.s3.amazonaws.com/circleci-images/cache/linux-amd64/docker-compose-latest" \
-  && curl --silent --show-error --location --fail --retry 3 --output /usr/local/bin/docker-compose $COMPOSE_URL \
-  && chmod +xs /usr/local/bin/docker-compose
+ARG COMPOSE_VERSION=1.22.0
+
+RUN curl --silent --show-error --location --fail --retry 3 --output /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-Linux-x86_64 \
+  && chown root:root /usr/local/bin/docker-compose \
+  && chmod +sx /usr/local/bin/docker-compose \
+  && docker-compose --version
 
 USER jenkins
 

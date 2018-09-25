@@ -4,11 +4,9 @@ USER jenkins
 
 WORKDIR $HOME
 
-ARG packer_version=1.2.5
+ARG PACKER_VERSION=1.2.5
 
-RUN curl -L https://releases.hashicorp.com/packer/${packer_version}/packer_${packer_version}_linux_amd64.zip -o packer_${packer_version}_linux_amd64.zip \
-    && unzip packer_${packer_version}_linux_amd64.zip -d packer \
-    && mv packer/packer .local/bin \
-    && rm -rf packer_${packer_version}_linux_amd64.zip
-
-COPY packer/wrappers/* /usr/local/bin/
+RUN curl -L https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o packer_${PACKER_VERSION}_linux_amd64.zip \
+    && unzip packer_${PACKER_VERSION}_linux_amd64.zip -d packer \
+    && mv packer/packer $HOME/.local/bin \
+    && rm -rf packer_${PACKER_VERSION}_linux_amd64.zip

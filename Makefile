@@ -28,5 +28,8 @@ build-aws:
 aws-version:
 	docker run -it --rm -u 1000:1000 -v /var/run/docker.sock:/var/run/docker.sock jenkinstools/aws:latest aws --version
 
-make-all: build-base build-eb build-ecs-cli build-packer build-aws
+build-jenkins:
+	docker build -t jenkinstools/jenkins-with-docker:latest -f jenkins-with-docker/Dockerfile .
+
+make-all: build-jenkins build-base build-eb build-ecs-cli build-packer build-aws
 
